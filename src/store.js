@@ -1,8 +1,27 @@
-import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from './features/counter/counterSlice';
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 
-export default configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
+import logger from "redux-logger";
+
+import rootReducer from "./reducers";
+
+import * as actionCreators from "./actions/actionCreators";
+
+const middleware = [...getDefaultMiddleware(), logger];
+
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware,
+  devTools: process.env.NODE_ENV !== "production"
 });
+
+export const mapStateToProps = state => state;
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actionCreators, dispatch);
+}
+
+export function connectComponent(component) {
+  return connect(mapStateToProps, mapDispatchToProps)(component);
+}
